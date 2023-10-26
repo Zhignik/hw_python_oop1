@@ -71,10 +71,10 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    K_1: float = 0.035
-    K_2: float = 0.029
-    K_3: float = 0.278  # Коффициент для перевода в м/с
-    K_4: int = 100  # Коффициент для перевода роста в сантиметры
+    WEIGHT_CALORIES_MULTIPLIER: float = 0.035
+    WEIGHT_CALORIES_SHIFT: float = 0.029
+    MEAN_SPEED_SHIFT: float = 0.278  # Коффициент для перевода в м/с
+    HEIGHT_IN_SM: int = 100  # Коффициент для перевода роста в сантиметры
 
     def __init__(self,
                  action,
@@ -87,10 +87,10 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        calories = ((self.K_1 * self.weight
-                    + ((self.get_mean_speed() * self.K_3)**2
-                     / (self.height / self.K_4))
-                    * self.K_2 * self.weight)
+        calories = ((self.WEIGHT_CALORIES_MULTIPLIER * self.weight
+                    + ((self.get_mean_speed() * self.MEAN_SPEED_SHIFT)**2
+                     / (self.height / self.HEIGHT_IN_SM))
+                    * self.WEIGHT_CALORIES_SHIFT * self.weight)
                     * (self.duration * self.MIN_IN_H))
         return calories
 
@@ -98,8 +98,8 @@ class SportsWalking(Training):
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
-    swm_k1: float = 1.1
-    swm_k2: float = 2
+    SWIMM_MEAN_SPEED_SHIFT: float = 1.1
+    MEAN_SPEED_MULTIPLIER: float = 2
 
     def __init__(self,
                  action,
@@ -112,7 +112,8 @@ class Swimming(Training):
         self.count_pool = count_pool
 
     def get_spent_calories(self) -> float:
-        return ((self.get_mean_speed() + self.swm_k1) * self.swm_k2
+        return ((self.get_mean_speed() + self.SWIMM_MEAN_SPEED_SHIFT)
+                * self.MEAN_SPEED_MULTIPLIER
                 * self.weight * self.duration)
 
     def get_mean_speed(self) -> float:
